@@ -5,72 +5,165 @@
   <title>Formulaire Veille IA</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body class="bg-gray-100 p-4 font-sans">
-
   <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
-    <div class="flex justify-between items-center mb-4">
-      <div>
-        <img src="logo_janvier.png" alt="JANVIER" class="h-16">
-        <div class="text-xs text-gray-500">Laboratoire Photographique Digital</div>
-      </div>
-      <div>
-        <img src="logo_picto.png" alt="PICTO" class="h-16">
-      </div>
+    <h1 class="text-2xl font-bold text-center mb-6">Formulaire Veille IA</h1>
+
+    <!-- Champs de base -->
+    <div class="mb-4">
+      <label for="periode" class="block font-semibold">Période :</label>
+      <input id="periode" class="w-full border p-2 rounded" type="text" required>
+    </div>
+    <div class="mb-4">
+      <label for="referents" class="block font-semibold">Référents :</label>
+      <input id="referents" class="w-full border p-2 rounded" type="text" required>
+    </div>
+    <div class="mb-4">
+      <label for="service" class="block font-semibold">Service :</label>
+      <input id="service" class="w-full border p-2 rounded" type="text" required>
     </div>
 
-    <h1 class="text-2xl font-bold text-center mb-6">Veille IA – JANVIER / PICTO</h1>
+    <!-- Veille -->
+    <h2 class="text-lg font-bold mt-6">Veille</h2>
+    <table id="veilleTable" class="w-full table-auto border mt-2 mb-4">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border p-2">Source</th>
+          <th class="border p-2">Description</th>
+          <th class="border p-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="ajouterVeille()" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter une veille</button>
 
-    <!-- Champs généraux -->
-    <div class="mb-6">
-      <label for="periode" class="block text-gray-700 font-semibold mb-2">Période concernée</label>
-      <input type="text" id="periode" class="w-full p-2 border rounded-md">
+    <!-- Tests -->
+    <h2 class="text-lg font-bold mt-6">Tests IA</h2>
+    <table id="testTable" class="w-full table-auto border mt-2 mb-4">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border p-2">Nom</th>
+          <th class="border p-2">Résultat</th>
+          <th class="border p-2">Commentaire</th>
+          <th class="border p-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="ajouterTest()" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter un test</button>
+
+    <!-- Feedback -->
+    <h2 class="text-lg font-bold mt-6">Feedback client</h2>
+    <table id="feedbackTable" class="w-full table-auto border mt-2 mb-4">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="border p-2">Commentaire</th>
+          <th class="border p-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button onclick="ajouterFeedback()" class="bg-blue-600 text-white px-4 py-2 rounded">Ajouter un feedback</button>
+
+    <!-- Bouton ENVOYER -->
+    <div class="mt-8 text-center">
+      <button onclick="envoyerDonnees()" class="bg-green-600 text-white px-6 py-3 rounded-lg font-bold">Envoyer</button>
     </div>
-
-    <div class="mb-6">
-      <label for="referents" class="block text-gray-700 font-semibold mb-2">Référents (prénom)</label>
-      <input type="text" id="referents" class="w-full p-2 border rounded-md">
-    </div>
-
-    <div class="mb-6">
-      <label for="service" class="block text-gray-700 font-semibold mb-2">Service concerné</label>
-      <input type="text" id="service" class="w-full p-2 border rounded-md">
-    </div>
-
-    <!-- BOUTON ENVOYER -->
-    <div class="mt-8 flex justify-center no-print">
-      <button onclick="envoyerDonnees()" class="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-900 font-semibold">
-        <i class="fas fa-paper-plane mr-2"></i>Envoyer
-      </button>
-    </div>
-
   </div>
 
   <script>
-    function envoyerDonnees() {
-      const url = "https://script.google.com/macros/s/AKfycbyehBUYBuuV_I2NGe_7Nr6iDbDGzq44VEvWIybP0ghKRF0rQ5k2QoglkVhBXQ_IwJkN/exec";
+    const url = "TON_URL_APPS_SCRIPT_ICI"; // 🔁 À remplacer une fois déployé
 
-      const data = {
-        periode: document.getElementById('periode').value,
-        referents: document.getElementById('referents').value,
-        service: document.getElementById('service').value
+    function getBaseInfos() {
+      return {
+        periode: document.getElementById("periode").value,
+        referents: document.getElementById("referents").value,
+        service: document.getElementById("service").value
       };
+    }
 
+    function ajouterVeille() {
+      const table = document.getElementById("veilleTable").getElementsByTagName("tbody")[0];
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td class="border p-2"><input class="w-full" /></td>
+        <td class="border p-2"><input class="w-full" /></td>
+        <td class="border p-2 text-center"><button onclick="this.parentElement.parentElement.remove()">🗑️</button></td>`;
+    }
+
+    function ajouterTest() {
+      const table = document.getElementById("testTable").getElementsByTagName("tbody")[0];
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td class="border p-2"><input class="w-full" /></td>
+        <td class="border p-2"><input class="w-full" /></td>
+        <td class="border p-2"><input class="w-full" /></td>
+        <td class="border p-2 text-center"><button onclick="this.parentElement.parentElement.remove()">🗑️</button></td>`;
+    }
+
+    function ajouterFeedback() {
+      const table = document.getElementById("feedbackTable").getElementsByTagName("tbody")[0];
+      const row = table.insertRow();
+      row.innerHTML = `
+        <td class="border p-2"><input class="w-full" /></td>
+        <td class="border p-2 text-center"><button onclick="this.parentElement.parentElement.remove()">🗑️</button></td>`;
+    }
+
+    function envoyerDonnees() {
+      const infos = getBaseInfos();
+
+      // Envoyer infos générales
       fetch(url, {
         method: "POST",
         mode: "no-cors",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      }).then(() => {
-        alert("✅ Données envoyées avec succès !");
-      }).catch((error) => {
-        alert("❌ Erreur lors de l'envoi : " + error);
+        body: JSON.stringify({ type: "infos", ...infos })
       });
+
+      // Veille
+      document.querySelectorAll("#veilleTable tbody tr").forEach(row => {
+        const cells = row.querySelectorAll("input");
+        fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+            type: "veille", ...infos,
+            source: cells[0].value,
+            description: cells[1].value
+          })
+        });
+      });
+
+      // Tests
+      document.querySelectorAll("#testTable tbody tr").forEach(row => {
+        const cells = row.querySelectorAll("input");
+        fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+            type: "test", ...infos,
+            nom: cells[0].value,
+            resultat: cells[1].value,
+            commentaire: cells[2].value
+          })
+        });
+      });
+
+      // Feedback
+      document.querySelectorAll("#feedbackTable tbody tr").forEach(row => {
+        const cells = row.querySelectorAll("input");
+        fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          body: JSON.stringify({
+            type: "feedback", ...infos,
+            commentaire: cells[0].value
+          })
+        });
+      });
+
+      alert("✅ Données envoyées !");
     }
   </script>
-
 </body>
 </html>

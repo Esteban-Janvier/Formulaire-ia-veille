@@ -96,34 +96,6 @@
       alert("✅ Données envoyées !");
     }
   </script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzWVLm8l0paMK540HEv1yACE0CqinTH44yfMhrm9BuTaudnE40UtRITEXyHtWV4TMpN/exec";
-
-  function gatherAllData() {
-    return {
-      periode: document.getElementById('periode').value,
-      referents: document.getElementById('referents').value,
-      service: document.getElementById('service').value,
-      // ici : collecte de toutes les tables/rubriques (veille, tests, feedback...).
-      // tu peux créer un tableau pour chaque type, ex. :
-      veille: Array.from(document.querySelectorAll('#solutions-table .solution-row')).map(r => ({
-        solution: r.querySelector('input').value,
-        type: r.querySelector('select').value,
-        // etc.
-      })),
-      // idem : evolutions, tests, formations...
-    };
-  }
-
-  function envoyerDonnees() {
-    const data = gatherAllData();
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify(data)
-    })
-    .then(r => alert('✅ Données envoyées !'))
-    .catch(e => alert('❌ Erreur : ' + e.message));
-  }
-</script>
-
+ 
 </body>
 </html>

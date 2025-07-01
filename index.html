@@ -7,9 +7,1199 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Le reste du code HTML sera ajouté ici dynamiquement -->
+    <style>
+        .janvier-logo {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .janvier-subtitle {
+            font-size: 0.9rem;
+            color: #1e3a8a;
+            font-style: italic;
+            margin-top: -5px;
+        }
+        .picto-logo {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 2.5rem;
+            color: #ef4444;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #1e3a8a, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .priority-high { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .priority-medium { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+        .priority-low { background-color: #d1fae5; border-left: 4px solid #10b981; }
+        .chart-container { height: 300px; }
+        @media print {
+            body { -webkit-print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+    </style>
 </head>
-<body>
-    <!-- Le corps du formulaire complet sera collé ici. -->
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header avec logos -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6 border-t-4 border-blue-600">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center space-x-8">
+                    <div>
+                        <div class="janvier-logo">JANVIER</div>
+                        <div class="janvier-subtitle">Laboratoire Photographique Digital</div>
+                    </div>
+                    <div class="text-gray-400">×</div>
+                    <div class="picto-logo">PICTO</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm text-gray-500">Référence: FE-05-A</div>
+                    <div class="text-sm text-gray-500">Diffusion: Interne</div>
+                </div>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-center section-header mb-4">
+                <i class="fas fa-search mr-3"></i>FICHE DE SUIVI VEILLE IA
+            </h1>
+            
+            <!-- Informations générales -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Période</label>
+                    <input type="text" id="periode" class="w-full p-2 border rounded-md" placeholder="Du ... au ...">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Référent(s)</label>
+                    <input type="text" id="referents" class="w-full p-2 border rounded-md" placeholder="Nom du référent">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Service</label>
+                    <select id="service" class="w-full p-2 border rounded-md">
+                        <option value="">Sélectionner...</option>
+                        <option value="RSE">RSE</option>
+                        <option value="Production">Production</option>
+                        <option value="Commercial">Commercial</option>
+                        <option value="Technique">Technique</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 1: Veille Technologique -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 flex items-center">
+                <i class="fas fa-telescope mr-3"></i>2. VEILLE TECHNOLOGIQUE
+            </h2>
+            
+            <!-- 2.1 Nouvelles solutions -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>2.1 Nouvelles solutions identifiées
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-blue-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Solution</th>
+                                <th class="border border-gray-300 p-3 text-left">Type</th>
+                                <th class="border border-gray-300 p-3 text-left">Source</th>
+                                <th class="border border-gray-300 p-3 text-left">Pertinence (1-5)</th>
+                                <th class="border border-gray-300 p-3 text-left">Priorité</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solutions-table">
+                            <tr class="solution-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom de la solution">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select class="w-full p-1 border rounded">
+                                        <option value="">Type...</option>
+                                        <option value="Retouche">Retouche</option>
+                                        <option value="Détourage">Détourage</option>
+                                        <option value="Colorimétrie">Colorimétrie</option>
+                                        <option value="IA Générative">IA Générative</option>
+                                        <option value="Workflow">Workflow</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Newsletter, salon...">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="range" min="1" max="5" class="w-full pertinence-slider" oninput="updatePertinenceValue(this)">
+                                    <div class="text-center text-sm font-bold pertinence-value">3</div>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select class="w-full p-1 border rounded priority-select" onchange="updatePriorityColor(this)">
+                                        <option value="">Priorité...</option>
+                                        <option value="Haute">Haute</option>
+                                        <option value="Moyenne">Moyenne</option>
+                                        <option value="Basse">Basse</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeSolutionRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addSolutionRow()" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une solution
+                </button>
+            </div>
+
+            <!-- 2.2 Évolutions des outils -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-sync-alt mr-2 text-green-500"></i>2.2 Évolutions des outils déjà identifiés
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Outil</th>
+                                <th class="border border-gray-300 p-3 text-left">Mise à jour</th>
+                                <th class="border border-gray-300 p-3 text-left">Impact potentiel</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="evolutions-table">
+                            <tr class="evolution-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom de l'outil">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Description de la mise à jour"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Impact sur nos processus"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeEvolutionRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addEvolutionRow()" class="mt-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une évolution
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 2: Tests et Expérimentations -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-red-600 mb-4 flex items-center">
+                <i class="fas fa-flask mr-3"></i>3. TESTS ET EXPÉRIMENTATIONS
+            </h2>
+            
+            <!-- 3.1 Tests en cours -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-play-circle mr-2 text-blue-500"></i>3.1 Tests en cours
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-blue-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Outil</th>
+                                <th class="border border-gray-300 p-3 text-left">Cas d'usage/Client</th>
+                                <th class="border border-gray-300 p-3 text-left">Avancement (%)</th>
+                                <th class="border border-gray-300 p-3 text-left">Premiers résultats</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tests-cours-table">
+                            <tr class="test-cours-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom de l'outil">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Cas d'usage ou client">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="range" min="0" max="100" class="w-full progress-slider" oninput="updateProgressValue(this)">
+                                    <div class="text-center text-sm font-bold progress-value">50%</div>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Observations et résultats"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeTestCoursRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addTestCoursRow()" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un test
+                </button>
+            </div>
+
+            <!-- 3.2 Tests terminés -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-check-circle mr-2 text-green-500"></i>3.2 Tests terminés cette semaine
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Outil</th>
+                                <th class="border border-gray-300 p-3 text-left">Points forts</th>
+                                <th class="border border-gray-300 p-3 text-left">Points faibles</th>
+                                <th class="border border-gray-300 p-3 text-left">Recommandation</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tests-termines-table">
+                            <tr class="test-termine-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom de l'outil">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Points forts identifiés"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Points faibles identifiés"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select class="w-full p-1 border rounded recommendation-select" onchange="updateRecommendationColor(this)">
+                                        <option value="">Recommandation...</option>
+                                        <option value="Adopter">Adopter</option>
+                                        <option value="Rejeter">Rejeter</option>
+                                        <option value="Approfondir">Approfondir</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeTestTermineRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addTestTermineRow()" class="mt-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un test terminé
+                </button>
+            </div>
+
+            <!-- Lien vers tests -->
+            <div class="bg-gray-100 p-4 rounded-lg">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Lien vers les tests réalisés</label>
+                <input type="url" id="lien-tests" class="w-full p-2 border rounded-md" placeholder="URL interne vers les résultats détaillés">
+            </div>
+        </div>
+
+        <!-- Section 3: Intégration aux Process -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-purple-600 mb-4 flex items-center">
+                <i class="fas fa-cogs mr-3"></i>4. INTÉGRATION AUX PROCESS
+            </h2>
+            
+            <!-- 4.1 Améliorations proposées -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-arrow-up mr-2 text-blue-500"></i>4.1 Améliorations proposées
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-purple-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Process concerné</th>
+                                <th class="border border-gray-300 p-3 text-left">Proposition</th>
+                                <th class="border border-gray-300 p-3 text-left">Gain estimé</th>
+                                <th class="border border-gray-300 p-3 text-left">Complexité</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ameliorations-table">
+                            <tr class="amelioration-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom du process">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Description de l'amélioration"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select class="w-full p-1 border rounded gain-select" onchange="updateGainColor(this)">
+                                        <option value="">Gain...</option>
+                                        <option value="Très élevé">Très élevé</option>
+                                        <option value="Élevé">Élevé</option>
+                                        <option value="Moyen">Moyen</option>
+                                        <option value="Faible">Faible</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select class="w-full p-1 border rounded complexite-select" onchange="updateComplexiteColor(this)">
+                                        <option value="">Complexité...</option>
+                                        <option value="Très élevée">Très élevée</option>
+                                        <option value="Élevée">Élevée</option>
+                                        <option value="Moyenne">Moyenne</option>
+                                        <option value="Faible">Faible</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeAmeliorationRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addAmeliorationRow()" class="mt-3 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une amélioration
+                </button>
+            </div>
+
+            <!-- 4.2 Expérimentations réelles -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-users mr-2 text-orange-500"></i>4.2 Expérimentations en conditions réelles
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-orange-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Client</th>
+                                <th class="border border-gray-300 p-3 text-left">Projet</th>
+                                <th class="border border-gray-300 p-3 text-left">Approche testée</th>
+                                <th class="border border-gray-300 p-3 text-left">Résultat</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="experimentations-table">
+                            <tr class="experimentation-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom du client">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nom du projet">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Description de l'approche"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Résultats obtenus"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeExperimentationRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addExperimentationRow()" class="mt-3 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une expérimentation
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 4: Formation et Partage -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-green-600 mb-4 flex items-center">
+                <i class="fas fa-graduation-cap mr-3"></i>5. FORMATION ET PARTAGE
+            </h2>
+            
+            <!-- 5.1 Actions réalisées -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-2 text-blue-500"></i>5.1 Actions réalisées
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-green-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Action</th>
+                                <th class="border border-gray-300 p-3 text-left">Participants</th>
+                                <th class="border border-gray-300 p-3 text-left">Satisfaction (1-5)</th>
+                                <th class="border border-gray-300 p-3 text-left">Apprentissages clés</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="formations-table">
+                            <tr class="formation-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Type d'action de formation">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Nombre et profils">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="range" min="1" max="5" class="w-full satisfaction-slider" oninput="updateSatisfactionValue(this)">
+                                    <div class="text-center text-sm font-bold satisfaction-value">3</div>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea class="w-full p-1 border rounded" rows="2" placeholder="Points clés retenus"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeFormationRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addFormationRow()" class="mt-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une formation
+                </button>
+            </div>
+
+            <!-- 5.2 Ressources ajoutées -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-book mr-2 text-purple-500"></i>5.2 Ressources ajoutées à la base de connaissances
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-purple-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Titre</th>
+                                <th class="border border-gray-300 p-3 text-left">Type</th>
+                                <th class="border border-gray-300 p-3 text-left">Auteur</th>
+                                <th class="border border-gray-300 p-3 text-left">Lien</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ressources-table">
+                            <tr class="ressource-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Titre de la ressource">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select class="w-full p-1 border rounded">
+                                        <option value="">Type...</option>
+                                        <option value="Tutoriel">Tutoriel</option>
+                                        <option value="Article">Article</option>
+                                        <option value="Vidéo">Vidéo</option>
+                                        <option value="Documentation">Documentation</option>
+                                        <option value="Guide">Guide</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" class="w-full p-1 border rounded" placeholder="Référent/Auteur">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="url" class="w-full p-1 border rounded" placeholder="URL interne">
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button onclick="removeRessourceRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="addRessourceRow()" class="mt-3 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une ressource
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 5: Feedback Client -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-indigo-600 mb-4 flex items-center">
+                <i class="fas fa-comments mr-3"></i>6. FEEDBACK CLIENT
+            </h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse border border-gray-300">
+                    <thead class="bg-indigo-50">
+                        <tr>
+                            <th class="border border-gray-300 p-3 text-left">Client</th>
+                            <th class="border border-gray-300 p-3 text-left">Projet</th>
+                            <th class="border border-gray-300 p-3 text-left">Commentaire</th>
+                            <th class="border border-gray-300 p-3 text-left">Impact</th>
+                            <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedback-table">
+                        <tr class="feedback-row">
+                            <td class="border border-gray-300 p-2">
+                                <input type="text" class="w-full p-1 border rounded" placeholder="Nom du client">
+                            </td>
+                            <td class="border border-gray-300 p-2">
+                                <input type="text" class="w-full p-1 border rounded" placeholder="Nom du projet">
+                            </td>
+                            <td class="border border-gray-300 p-2">
+                                <textarea class="w-full p-1 border rounded" rows="2" placeholder="Commentaire du client"></textarea>
+                            </td>
+                            <td class="border border-gray-300 p-2">
+                                <select class="w-full p-1 border rounded impact-select" onchange="updateImpactColor(this)">
+                                    <option value="">Impact...</option>
+                                    <option value="Positif">Positif</option>
+                                    <option value="Neutre">Neutre</option>
+                                    <option value="Négatif">Négatif</option>
+                                </select>
+                            </td>
+                            <td class="border border-gray-300 p-2 text-center no-print">
+                                <button onclick="removeFeedbackRow(this)" class="text-red-500 hover:text-red-700">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button onclick="addFeedbackRow()" class="mt-3 bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 no-print">
+                <i class="fas fa-plus mr-2"></i>Ajouter un feedback
+            </button>
+        </div>
+
+        <!-- Section 6: Points d'Attention -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-yellow-600 mb-4 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-3"></i>7. POINTS D'ATTENTION ET RECOMMANDATIONS
+            </h2>
+            
+            <!-- 7.1 Points nécessitant arbitrage -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-balance-scale mr-2 text-red-500"></i>7.1 Points nécessitant arbitrage
+                </h3>
+                <div id="arbitrages-container">
+                    <div class="arbitrage-item mb-4 p-4 border-l-4 border-red-500 bg-red-50">
+                        <textarea class="w-full p-2 border rounded-md" rows="3" placeholder="Description du point nécessitant arbitrage avec options possibles..."></textarea>
+                    </div>
+                </div>
+                <button onclick="addArbitrageItem()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un point d'arbitrage
+                </button>
+            </div>
+
+            <!-- 7.2 Opportunités -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-lightbulb mr-2 text-green-500"></i>7.2 Opportunités à saisir
+                </h3>
+                <div id="opportunites-container">
+                    <div class="opportunite-item mb-4 p-4 border-l-4 border-green-500 bg-green-50">
+                        <textarea class="w-full p-2 border rounded-md" rows="3" placeholder="Description de l'opportunité avec bénéfices potentiels..."></textarea>
+                    </div>
+                </div>
+                <button onclick="addOpportuniteItem()" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une opportunité
+                </button>
+            </div>
+
+            <!-- 7.3 Risques -->
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-shield-alt mr-2 text-orange-500"></i>7.3 Risques identifiés
+                </h3>
+                <div id="risques-container">
+                    <div class="risque-item mb-4 p-4 border-l-4 border-orange-500 bg-orange-50">
+                        <textarea class="w-full p-2 border rounded-md" rows="3" placeholder="Description du risque avec mesures d'atténuation proposées..."></textarea>
+                    </div>
+                </div>
+                <button onclick="addRisqueItem()" class="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un risque
+                </button>
+            </div>
+        </div>
+
+        <!-- Section 7: Planning -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-teal-600 mb-4 flex items-center">
+                <i class="fas fa-calendar-alt mr-3"></i>8. PLANNING DE LA SEMAINE PROCHAINE
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Priorités de la semaine</h3>
+                    <textarea class="w-full p-3 border rounded-md" rows="6" placeholder="• Action prioritaire 1&#10;• Action prioritaire 2&#10;• Action prioritaire 3"></textarea>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-gray-700 mb-3">Ressources nécessaires</h3>
+                    <textarea class="w-full p-3 border rounded-md" rows="6" placeholder="• Ressource 1&#10;• Ressource 2&#10;• Support technique"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 8: Annexes -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-gray-600 mb-4 flex items-center">
+                <i class="fas fa-paperclip mr-3"></i>9. ANNEXES ET RESSOURCES
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Démos/Résultats visuels</label>
+                    <input type="url" class="w-full p-2 border rounded-md" placeholder="Lien vers démos">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Documentations techniques</label>
+                    <input type="url" class="w-full p-2 border rounded-md" placeholder="Lien vers docs">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Analyses détaillées</label>
+                    <input type="url" class="w-full p-2 border rounded-md" placeholder="Lien vers analyses">
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard et Métriques -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6 no-print">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-bar mr-3"></i>TABLEAU DE BORD
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <canvas id="priorityChart" class="chart-container"></canvas>
+                </div>
+                <div>
+                    <canvas id="progressChart" class="chart-container"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions de sauvegarde -->
+        <div class="bg-gradient-to-r from-blue-600 to-red-600 rounded-lg shadow-lg p-6 text-white no-print">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-save mr-3"></i>ACTIONS AUTOMATIQUES
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <button onclick="saveToGoogleDrive()" class="bg-white text-blue-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fab fa-google-drive mr-2"></i>Sauvegarder sur Drive
+                </button>
+                <button onclick="exportToExcel()" class="bg-white text-green-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fas fa-file-excel mr-2"></i>Exporter Excel
+                </button>
+                <button onclick="generateReport()" class="bg-white text-purple-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fas fa-file-alt mr-2"></i>Générer Rapport
+                </button>
+                <button onclick="shareForm()" class="bg-white text-orange-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fas fa-share-alt mr-2"></i>Partager
+                </button>
+            </div>
+            
+            <div class="mt-4 text-sm opacity-90">
+                <p><i class="fas fa-info-circle mr-2"></i>Toutes vos données sont automatiquement sauvegardées localement</p>
+                <p><i class="fas fa-link mr-2"></i>Lien de partage : <span id="share-link" class="font-mono bg-white bg-opacity-20 px-2 py-1 rounded">Générer le lien de partage...</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sauvegarde automatique
+        function autoSave() {
+            const formData = gatherFormData();
+            localStorage.setItem('veille_ia_data', JSON.stringify(formData));
+        }
+
+        // Collecte des données du formulaire
+        function gatherFormData() {
+            return {
+                periode: document.getElementById('periode').value,
+                referents: document.getElementById('referents').value,
+                service: document.getElementById('service').value,
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        // Chargement des données sauvegardées
+        function loadSavedData() {
+            const saved = localStorage.getItem('veille_ia_data');
+            if (saved) {
+                const data = JSON.parse(saved);
+                document.getElementById('periode').value = data.periode || '';
+                document.getElementById('referents').value = data.referents || '';
+                document.getElementById('service').value = data.service || '';
+            }
+        }
+
+        // Fonctions pour les sliders
+        function updatePertinenceValue(slider) {
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = slider.value;
+            autoSave();
+        }
+
+        function updateProgressValue(slider) {
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = slider.value + '%';
+            autoSave();
+        }
+
+        function updateSatisfactionValue(slider) {
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = slider.value;
+            autoSave();
+        }
+
+        // Fonctions pour les couleurs de priorité
+        function updatePriorityColor(select) {
+            const row = select.closest('tr');
+            row.className = row.className.replace(/priority-\w+/g, '');
+            
+            switch(select.value) {
+                case 'Haute':
+                    row.classList.add('priority-high');
+                    break;
+                case 'Moyenne':
+                    row.classList.add('priority-medium');
+                    break;
+                case 'Basse':
+                    row.classList.add('priority-low');
+                    break;
+            }
+            autoSave();
+        }
+
+        function updateRecommendationColor(select) {
+            switch(select.value) {
+                case 'Adopter':
+                    select.style.backgroundColor = '#d1fae5';
+                    break;
+                case 'Rejeter':
+                    select.style.backgroundColor = '#fee2e2';
+                    break;
+                case 'Approfondir':
+                    select.style.backgroundColor = '#fef3c7';
+                    break;
+                default:
+                    select.style.backgroundColor = '';
+            }
+            autoSave();
+        }
+
+        function updateGainColor(select) {
+            switch(select.value) {
+                case 'Très élevé':
+                    select.style.backgroundColor = '#dcfce7';
+                    break;
+                case 'Élevé':
+                    select.style.backgroundColor = '#fef3c7';
+                    break;
+                case 'Moyen':
+                    select.style.backgroundColor = '#fed7aa';
+                    break;
+                case 'Faible':
+                    select.style.backgroundColor = '#fee2e2';
+                    break;
+            }
+            autoSave();
+        }
+
+        function updateComplexiteColor(select) {
+            switch(select.value) {
+                case 'Très élevée':
+                    select.style.backgroundColor = '#fee2e2';
+                    break;
+                case 'Élevée':
+                    select.style.backgroundColor = '#fed7aa';
+                    break;
+                case 'Moyenne':
+                    select.style.backgroundColor = '#fef3c7';
+                    break;
+                case 'Faible':
+                    select.style.backgroundColor = '#d1fae5';
+                    break;
+            }
+            autoSave();
+        }
+
+        function updateImpactColor(select) {
+            switch(select.value) {
+                case 'Positif':
+                    select.style.backgroundColor = '#d1fae5';
+                    break;
+                case 'Neutre':
+                    select.style.backgroundColor = '#f3f4f6';
+                    break;
+                case 'Négatif':
+                    select.style.backgroundColor = '#fee2e2';
+                    break;
+            }
+            autoSave();
+        }
+
+        // Fonctions d'ajout de lignes
+        function addSolutionRow() {
+            const tbody = document.getElementById('solutions-table');
+            const newRow = tbody.querySelector('.solution-row').cloneNode(true);
+            
+            // Vider les champs
+            newRow.querySelectorAll('input, select').forEach(field => {
+                field.value = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addEvolutionRow() {
+            const tbody = document.getElementById('evolutions-table');
+            const newRow = tbody.querySelector('.evolution-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea').forEach(field => {
+                field.value = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addTestCoursRow() {
+            const tbody = document.getElementById('tests-cours-table');
+            const newRow = tbody.querySelector('.test-cours-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea').forEach(field => {
+                field.value = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addTestTermineRow() {
+            const tbody = document.getElementById('tests-termines-table');
+            const newRow = tbody.querySelector('.test-termine-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea, select').forEach(field => {
+                field.value = '';
+                field.style.backgroundColor = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addAmeliorationRow() {
+            const tbody = document.getElementById('ameliorations-table');
+            const newRow = tbody.querySelector('.amelioration-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea, select').forEach(field => {
+                field.value = '';
+                field.style.backgroundColor = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addExperimentationRow() {
+            const tbody = document.getElementById('experimentations-table');
+            const newRow = tbody.querySelector('.experimentation-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea').forEach(field => {
+                field.value = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addFormationRow() {
+            const tbody = document.getElementById('formations-table');
+            const newRow = tbody.querySelector('.formation-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea').forEach(field => {
+                field.value = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addRessourceRow() {
+            const tbody = document.getElementById('ressources-table');
+            const newRow = tbody.querySelector('.ressource-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, select').forEach(field => {
+                field.value = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        function addFeedbackRow() {
+            const tbody = document.getElementById('feedback-table');
+            const newRow = tbody.querySelector('.feedback-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea, select').forEach(field => {
+                field.value = '';
+                field.style.backgroundColor = '';
+            });
+            
+            tbody.appendChild(newRow);
+            autoSave();
+        }
+
+        // Fonctions de suppression
+        function removeSolutionRow(button) {
+            const tbody = document.getElementById('solutions-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeEvolutionRow(button) {
+            const tbody = document.getElementById('evolutions-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeTestCoursRow(button) {
+            const tbody = document.getElementById('tests-cours-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeTestTermineRow(button) {
+            const tbody = document.getElementById('tests-termines-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeAmeliorationRow(button) {
+            const tbody = document.getElementById('ameliorations-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeExperimentationRow(button) {
+            const tbody = document.getElementById('experimentations-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeFormationRow(button) {
+            const tbody = document.getElementById('formations-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeRessourceRow(button) {
+            const tbody = document.getElementById('ressources-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        function removeFeedbackRow(button) {
+            const tbody = document.getElementById('feedback-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                autoSave();
+            }
+        }
+
+        // Fonctions pour les sections textuelles
+        function addArbitrageItem() {
+            const container = document.getElementById('arbitrages-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'arbitrage-item mb-4 p-4 border-l-4 border-red-500 bg-red-50';
+            newItem.innerHTML = `
+                <textarea class="w-full p-2 border rounded-md" rows="3" placeholder="Description du point nécessitant arbitrage avec options possibles..."></textarea>
+                <button onclick="removeArbitrageItem(this)" class="mt-2 text-red-600 hover:text-red-800 text-sm">
+                    <i class="fas fa-times mr-1"></i>Supprimer
+                </button>
+            `;
+            container.appendChild(newItem);
+            autoSave();
+        }
+
+        function addOpportuniteItem() {
+            const container = document.getElementById('opportunites-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'opportunite-item mb-4 p-4 border-l-4 border-green-500 bg-green-50';
+            newItem.innerHTML = `
+                <textarea class="w-full p-2 border rounded-md" rows="3" placeholder="Description de l'opportunité avec bénéfices potentiels..."></textarea>
+                <button onclick="removeOpportuniteItem(this)" class="mt-2 text-green-600 hover:text-green-800 text-sm">
+                    <i class="fas fa-times mr-1"></i>Supprimer
+                </button>
+            `;
+            container.appendChild(newItem);
+            autoSave();
+        }
+
+        function addRisqueItem() {
+            const container = document.getElementById('risques-container');
+            const newItem = document.createElement('div');
+            newItem.className = 'risque-item mb-4 p-4 border-l-4 border-orange-500 bg-orange-50';
+            newItem.innerHTML = `
+                <textarea class="w-full p-2 border rounded-md" rows="3" placeholder="Description du risque avec mesures d'atténuation proposées..."></textarea>
+                <button onclick="removeRisqueItem(this)" class="mt-2 text-orange-600 hover:text-orange-800 text-sm">
+                    <i class="fas fa-times mr-1"></i>Supprimer
+                </button>
+            `;
+            container.appendChild(newItem);
+            autoSave();
+        }
+
+        function removeArbitrageItem(button) {
+            const container = document.getElementById('arbitrages-container');
+            if (container.children.length > 1) {
+                button.closest('.arbitrage-item').remove();
+                autoSave();
+            }
+        }
+
+        function removeOpportuniteItem(button) {
+            const container = document.getElementById('opportunites-container');
+            if (container.children.length > 1) {
+                button.closest('.opportunite-item').remove();
+                autoSave();
+            }
+        }
+
+        function removeRisqueItem(button) {
+            const container = document.getElementById('risques-container');
+            if (container.children.length > 1) {
+                button.closest('.risque-item').remove();
+                autoSave();
+            }
+        }
+
+        // Fonctions d'export et sauvegarde
+        function saveToGoogleDrive() {
+            const data = gatherFormData();
+            const driveUrl = 'https://drive.google.com/drive/folders/1vJPC8LMIcTdVvatjp0wsV8fFaaMS6s9M';
+            
+            // Simulation de l'intégration Google Drive
+            alert('📁 Données préparées pour Google Drive!\n\nÉtapes suivantes:\n1. Copiez ces données\n2. Ouvrez votre Drive: ' + driveUrl + '\n3. Créez un nouveau document\n4. Collez les données\n\nDonnées JSON copiées dans le presse-papiers!');
+            
+            // Copier les données dans le presse-papiers
+            navigator.clipboard.writeText(JSON.stringify(data, null, 2));
+        }
+
+        function exportToExcel() {
+            const data = gatherFormData();
+            const csvContent = convertToCSV(data);
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `veille_ia_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+
+        function convertToCSV(data) {
+            return `Période,Référents,Service,Date de création
+"${data.periode}","${data.referents}","${data.service}","${data.timestamp}"`;
+        }
+
+        function generateReport() {
+            window.print();
+        }
+
+        function shareForm() {
+            const shareUrl = window.location.href;
+            document.getElementById('share-link').textContent = shareUrl;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Formulaire de Suivi Veille IA - JANVIER & PICTO',
+                    text: 'Accédez au formulaire de suivi de veille technologique IA',
+                    url: shareUrl
+                });
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                alert('🔗 Lien de partage copié dans le presse-papiers!\n\n' + shareUrl);
+            }
+        }
+
+        // Initialisation des graphiques
+        function initCharts() {
+            // Graphique des priorités
+            const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+            new Chart(priorityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Haute', 'Moyenne', 'Basse'],
+                    datasets: [{
+                        data: [3, 5, 2],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Répartition des Priorités'
+                        }
+                    }
+                }
+            });
+
+            // Graphique de progression
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            new Chart(progressCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Tests en cours', 'Tests terminés', 'Formations', 'Ressources'],
+                    datasets: [{
+                        label: 'Nombre',
+                        data: [4, 3, 2, 5],
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Activités de la Semaine'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedData();
+            initCharts();
+            
+            // Sauvegarde automatique toutes les 30 secondes
+            setInterval(autoSave, 30000);
+            
+            // Sauvegarde sur changement de champ
+            document.addEventListener('input', autoSave);
+            document.addEventListener('change', autoSave);
+        });
+    </script>
 </body>
 </html>

@@ -152,6 +152,77 @@
 
       alert("✅ Données envoyées !");
     }
-  </script>
+  </script>const url = "https://script.google.com/macros/s/AKfycby3-UvMYau9IFJyPPHnaeKMZvVvdRALI5FVsM5-GqAm7ojXB8GybMrs6tXVej9ZzWKC/exec";
+
+function getBaseInfos() {
+  return {
+    periode: document.getElementById("periode").value,
+    referents: document.getElementById("referents").value,
+    service: document.getElementById("service").value
+  };
+}
+
+function ajouterLigne(tableId, nbColonnes) {
+  const table = document.getElementById(tableId).getElementsByTagName("tbody")[0];
+  const row = table.insertRow();
+  for (let i = 0; i < nbColonnes; i++) {
+    const cell = row.insertCell();
+    cell.className = "border p-2";
+    cell.innerHTML = '<input class="w-full" />';
+  }
+  const cellDelete = row.insertCell();
+  cellDelete.className = "border p-2 text-center";
+  cellDelete.innerHTML = '<button onclick="this.parentElement.parentElement.remove()">🗑️</button>';
+}
+
+function envoyerDonnees() {
+  const infos = getBaseInfos();
+
+  const veilles = [];
+  document.querySelectorAll("#veilleTable tbody tr").forEach(row => {
+    const cells = row.querySelectorAll("input");
+    veilles.push({
+      type: cells[0]?.value || '',
+      source: cells[1]?.value || '',
+      categorie: cells[2]?.value || '',
+      canal: cells[3]?.value || '',
+      commentaire: cells[4]?.value || ''
+    });
+  });
+
+  const tests = [];
+  document.querySelectorAll("#testTable tbody tr").forEach(row => {
+    const cells = row.querySelectorAll("input");
+    tests.push({
+      nom: cells[0]?.value || '',
+      resultat: cells[1]?.value || '',
+      commentaire: cells[2]?.value || ''
+    });
+  });
+
+  const feedbacks = [];
+  document.querySelectorAll("#feedbackTable tbody tr").forEach(row => {
+    const cells = row.querySelectorAll("input");
+    feedbacks.push({
+      commentaire: cells[0]?.value || ''
+    });
+  });
+
+  const payload = {
+    ...infos,
+    solutions: veilles,
+    testsCours: tests,
+    feedback: feedbacks
+  };
+
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(() => alert("✅ Données envoyées avec succès !"))
+  .catch(err => alert("❌ Erreur lors de l'envoi : " + err));
+}
+
 </body>
 </html>

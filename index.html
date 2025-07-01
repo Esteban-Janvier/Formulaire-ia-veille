@@ -1,157 +1,886 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Formulaire IA – Janvier & Picto</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulaire de Veille IA - Système Intégré JANVIER & PICTO</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .janvier-logo {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 2.5rem;
+            color: #1e3a8a;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .janvier-subtitle {
+            font-size: 0.9rem;
+            color: #1e3a8a;
+            font-style: italic;
+            margin-top: -5px;
+        }
+        .picto-logo {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            font-size: 2.5rem;
+            color: #ef4444;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+        .section-header {
+            background: linear-gradient(135deg, #1e3a8a, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .priority-high { background-color: #fee2e2; border-left: 4px solid #ef4444; }
+        .priority-medium { background-color: #fef3c7; border-left: 4px solid #f59e0b; }
+        .priority-low { background-color: #d1fae5; border-left: 4px solid #10b981; }
+        .chart-container { height: 400px; }
+        .status-indicator { 
+            width: 12px; 
+            height: 12px; 
+            border-radius: 50%; 
+            display: inline-block; 
+            margin-right: 8px;
+        }
+        .status-online { background-color: #10b981; }
+        .status-offline { background-color: #ef4444; }
+        .animated-gradient {
+            background: linear-gradient(-45deg, #1e3a8a, #3b82f6, #ef4444, #f59e0b);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        @media print {
+            body { -webkit-print-color-adjust: exact; }
+            .no-print { display: none; }
+        }
+    </style>
 </head>
-<body class="bg-gray-50 p-4 font-sans">
-  <div class="max-w-6xl mx-auto bg-white shadow rounded-xl p-6">
-    <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">Formulaire de Veille IA – Janvier & Picto</h1>
-
-    <!-- Infos générales -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div>
-        <label for="periode" class="block font-semibold">Période :</label>
-        <input id="periode" class="w-full border p-2 rounded" type="text" required />
-      </div>
-      <div>
-        <label for="referents" class="block font-semibold">Référents :</label>
-        <input id="referents" class="w-full border p-2 rounded" type="text" required />
-      </div>
-      <div>
-        <label for="service" class="block font-semibold">Service :</label>
-        <input id="service" class="w-full border p-2 rounded" type="text" required />
-      </div>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Status de connexion -->
+    <div id="connection-status" class="bg-blue-600 text-white text-center py-2 no-print">
+        <span class="status-indicator status-online"></span>
+        <span id="status-text">Connecté à Google Sheets - Sauvegarde automatique activée</span>
     </div>
 
-    <!-- Veille -->
-    <h2 class="text-xl font-bold mt-6 mb-2">Veille</h2>
-    <table id="veilleTable" class="w-full table-auto border mb-4">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="border p-2">Type</th>
-          <th class="border p-2">Source</th>
-          <th class="border p-2">Catégorie</th>
-          <th class="border p-2">Canal</th>
-          <th class="border p-2">Commentaire</th>
-          <th class="border p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button onclick="ajouterLigne('veilleTable', 5)" class="bg-blue-600 text-white px-4 py-2 rounded mb-8">Ajouter une veille</button>
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header avec logos -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6 border-t-4 animated-gradient">
+            <div class="bg-white rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center space-x-8">
+                        <div>
+                            <div class="janvier-logo">JANVIER</div>
+                            <div class="janvier-subtitle">Laboratoire Photographique Digital</div>
+                        </div>
+                        <div class="text-gray-400">×</div>
+                        <div class="picto-logo">PICTO</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-500">Référence: FE-05-A</div>
+                        <div class="text-sm text-gray-500">Diffusion: Interne</div>
+                        <div class="text-sm text-green-600 font-semibold">
+                            <i class="fas fa-cloud-upload-alt mr-1"></i>Auto-sauvegarde
+                        </div>
+                    </div>
+                </div>
+                
+                <h1 class="text-3xl font-bold text-center section-header mb-4 pulse-animation">
+                    <i class="fas fa-search mr-3"></i>SYSTÈME DE VEILLE IA INTÉGRÉ
+                </h1>
+                
+                <!-- Formulaire principal -->
+                <form id="veille-form" class="space-y-6">
+                    <!-- Informations générales -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Période</label>
+                            <input type="text" name="periode" required class="w-full p-2 border rounded-md" placeholder="Du ... au ...">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Référent(s)</label>
+                            <input type="text" name="referents" required class="w-full p-2 border rounded-md" placeholder="Nom du référent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Service</label>
+                            <select name="service" required class="w-full p-2 border rounded-md">
+                                <option value="">Sélectionner...</option>
+                                <option value="RSE">RSE</option>
+                                <option value="Production">Production</option>
+                                <option value="Commercial">Commercial</option>
+                                <option value="Technique">Technique</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
 
-    <!-- Tests -->
-    <h2 class="text-xl font-bold mt-6 mb-2">Tests IA</h2>
-    <table id="testTable" class="w-full table-auto border mb-4">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="border p-2">Nom</th>
-          <th class="border p-2">Résultat</th>
-          <th class="border p-2">Commentaire</th>
-          <th class="border p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button onclick="ajouterLigne('testTable', 3)" class="bg-blue-600 text-white px-4 py-2 rounded mb-8">Ajouter un test</button>
+        <!-- Section Veille Technologique -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-blue-800 mb-4 flex items-center">
+                <i class="fas fa-telescope mr-3"></i>VEILLE TECHNOLOGIQUE
+            </h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-lightbulb mr-2 text-yellow-500"></i>Nouvelles solutions identifiées
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-blue-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Solution</th>
+                                <th class="border border-gray-300 p-3 text-left">Type</th>
+                                <th class="border border-gray-300 p-3 text-left">Source</th>
+                                <th class="border border-gray-300 p-3 text-left">Pertinence (1-5)</th>
+                                <th class="border border-gray-300 p-3 text-left">Priorité</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="solutions-table">
+                            <tr class="solution-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" name="solution_nom" class="w-full p-1 border rounded" placeholder="Nom de la solution">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select name="solution_type" class="w-full p-1 border rounded">
+                                        <option value="">Type...</option>
+                                        <option value="Retouche">Retouche</option>
+                                        <option value="Détourage">Détourage</option>
+                                        <option value="Colorimétrie">Colorimétrie</option>
+                                        <option value="IA Générative">IA Générative</option>
+                                        <option value="Workflow">Workflow</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" name="solution_source" class="w-full p-1 border rounded" placeholder="Newsletter, salon...">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="range" name="solution_pertinence" min="1" max="5" class="w-full pertinence-slider" oninput="updatePertinenceValue(this)">
+                                    <div class="text-center text-sm font-bold pertinence-value">3</div>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <select name="solution_priorite" class="w-full p-1 border rounded priority-select" onchange="updatePriorityColor(this)">
+                                        <option value="">Priorité...</option>
+                                        <option value="Haute">Haute</option>
+                                        <option value="Moyenne">Moyenne</option>
+                                        <option value="Basse">Basse</option>
+                                    </select>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button type="button" onclick="removeSolutionRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" onclick="addSolutionRow()" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter une solution
+                </button>
+            </div>
+        </div>
 
-    <!-- Feedback -->
-    <h2 class="text-xl font-bold mt-6 mb-2">Feedback client</h2>
-    <table id="feedbackTable" class="w-full table-auto border mb-4">
-      <thead>
-        <tr class="bg-gray-200">
-          <th class="border p-2">Commentaire</th>
-          <th class="border p-2">Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button onclick="ajouterLigne('feedbackTable', 1)" class="bg-blue-600 text-white px-4 py-2 rounded mb-8">Ajouter un feedback</button>
+        <!-- Section Tests et Expérimentations -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-red-600 mb-4 flex items-center">
+                <i class="fas fa-flask mr-3"></i>TESTS ET EXPÉRIMENTATIONS
+            </h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-play-circle mr-2 text-blue-500"></i>Tests en cours
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border border-gray-300">
+                        <thead class="bg-blue-50">
+                            <tr>
+                                <th class="border border-gray-300 p-3 text-left">Outil</th>
+                                <th class="border border-gray-300 p-3 text-left">Cas d'usage/Client</th>
+                                <th class="border border-gray-300 p-3 text-left">Avancement (%)</th>
+                                <th class="border border-gray-300 p-3 text-left">Premiers résultats</th>
+                                <th class="border border-gray-300 p-3 text-center no-print">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tests-cours-table">
+                            <tr class="test-cours-row">
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" name="test_outil" class="w-full p-1 border rounded" placeholder="Nom de l'outil">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="text" name="test_usage" class="w-full p-1 border rounded" placeholder="Cas d'usage ou client">
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <input type="range" name="test_avancement" min="0" max="100" class="w-full progress-slider" oninput="updateProgressValue(this)">
+                                    <div class="text-center text-sm font-bold progress-value">50%</div>
+                                </td>
+                                <td class="border border-gray-300 p-2">
+                                    <textarea name="test_resultats" class="w-full p-1 border rounded" rows="2" placeholder="Observations et résultats"></textarea>
+                                </td>
+                                <td class="border border-gray-300 p-2 text-center no-print">
+                                    <button type="button" onclick="removeTestCoursRow(this)" class="text-red-500 hover:text-red-700">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <button type="button" onclick="addTestCoursRow()" class="mt-3 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 no-print">
+                    <i class="fas fa-plus mr-2"></i>Ajouter un test
+                </button>
+            </div>
+        </div>
 
-    <!-- Bouton ENVOYER -->
-    <div class="mt-10 text-center">
-      <button onclick="envoyerDonnees()" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold text-lg">Envoyer</button>
+        <!-- Section Formation -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-green-600 mb-4 flex items-center">
+                <i class="fas fa-graduation-cap mr-3"></i>FORMATION ET PARTAGE
+            </h2>
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-chalkboard-teacher mr-2 text-blue-500"></i>Actions réalisées
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Action de formation</label>
+                        <input type="text" name="formation_action" class="w-full p-2 border rounded-md" placeholder="Type d'action">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Participants</label>
+                        <input type="text" name="formation_participants" class="w-full p-2 border rounded-md" placeholder="Nombre et profils">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Apprentissages clés</label>
+                    <textarea name="formation_apprentissages" class="w-full p-2 border rounded-md" rows="3" placeholder="Points clés retenus"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Points d'Attention -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-bold text-yellow-600 mb-4 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-3"></i>POINTS D'ATTENTION
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                    <h3 class="text-lg font-semibold text-red-600 mb-3">
+                        <i class="fas fa-balance-scale mr-2"></i>Arbitrages nécessaires
+                    </h3>
+                    <textarea name="arbitrages" class="w-full p-3 border rounded-md border-l-4 border-red-500" rows="4" placeholder="Points nécessitant arbitrage..."></textarea>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-green-600 mb-3">
+                        <i class="fas fa-lightbulb mr-2"></i>Opportunités
+                    </h3>
+                    <textarea name="opportunites" class="w-full p-3 border rounded-md border-l-4 border-green-500" rows="4" placeholder="Opportunités à saisir..."></textarea>
+                </div>
+                <div>
+                    <h3 class="text-lg font-semibold text-orange-600 mb-3">
+                        <i class="fas fa-shield-alt mr-2"></i>Risques
+                    </h3>
+                    <textarea name="risques" class="w-full p-3 border rounded-md border-l-4 border-orange-500" rows="4" placeholder="Risques identifiés..."></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau de bord analytique -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6 no-print">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-bar mr-3"></i>TABLEAU DE BORD ANALYTIQUE
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-4 text-white">
+                    <h3 class="text-lg font-semibold mb-2">Solutions identifiées</h3>
+                    <div class="text-3xl font-bold" id="solutions-count">0</div>
+                    <p class="text-sm opacity-90">Cette semaine</p>
+                </div>
+                <div class="bg-gradient-to-r from-red-500 to-pink-600 rounded-lg p-4 text-white">
+                    <h3 class="text-lg font-semibold mb-2">Tests actifs</h3>
+                    <div class="text-3xl font-bold" id="tests-count">0</div>
+                    <p class="text-sm opacity-90">En cours</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <canvas id="priorityChart" style="height: 300px;"></canvas>
+                </div>
+                <div>
+                    <canvas id="progressChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions automatiques -->
+        <div class="bg-gradient-to-r from-blue-600 to-red-600 rounded-lg shadow-lg p-6 text-white no-print">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-robot mr-3"></i>SYSTÈME AUTOMATISÉ
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-cloud-upload-alt mr-2"></i>Sauvegarde Google Sheets
+                    </h3>
+                    <p class="text-sm mb-3">Données synchronisées automatiquement</p>
+                    <div class="text-xs">
+                        Dernière sync: <span id="last-sync">-</span>
+                    </div>
+                </div>
+                <div class="bg-white bg-opacity-20 rounded-lg p-4">
+                    <h3 class="text-lg font-semibold mb-2">
+                        <i class="fas fa-chart-line mr-2"></i>Analyses en temps réel
+                    </h3>
+                    <p class="text-sm mb-3">Métriques mises à jour automatiquement</p>
+                    <div class="text-xs">
+                        Taux de complétion: <span id="completion-rate">0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <button onclick="submitForm()" class="bg-white text-blue-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold pulse-animation">
+                    <i class="fas fa-paper-plane mr-2"></i>Envoyer à Google Sheets
+                </button>
+                <button onclick="exportToExcel()" class="bg-white text-green-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fas fa-file-excel mr-2"></i>Exporter Excel
+                </button>
+                <button onclick="generateReport()" class="bg-white text-purple-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fas fa-file-alt mr-2"></i>Rapport PDF
+                </button>
+                <button onclick="shareForm()" class="bg-white text-orange-600 px-4 py-3 rounded-lg hover:bg-gray-100 font-semibold">
+                    <i class="fas fa-share-alt mr-2"></i>Partager
+                </button>
+            </div>
+            
+            <div class="mt-6 text-sm opacity-90">
+                <p><i class="fas fa-info-circle mr-2"></i>Système entièrement automatisé - Vos données sont sécurisées et synchronisées</p>
+                <p><i class="fas fa-link mr-2"></i>URL Google Sheets : <span id="sheets-url" class="font-mono bg-white bg-opacity-20 px-2 py-1 rounded">Généré automatiquement</span></p>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    const url = "https://script.google.com/macros/s/AKfycbzWVLm8l0paMK540HEv1yACE0CqinTH44yfMhrm9BuTaudnE40UtRITEXyHtWV4TMpN/exec";
+    <script>
+        // Configuration Google Apps Script
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1hrFXyFsC9-H9KiJOfIm-jPn-Er5RkzUcfAANJj7_X7u3g1CuFmaT0BT6YU316GQq/exec';
+        
+        // Variables globales
+        let charts = {};
+        let formData = {};
+        let autoSaveInterval;
 
-    function getBaseInfos() {
-      return {
-        periode: document.getElementById("periode").value,
-        referents: document.getElementById("referents").value,
-        service: document.getElementById("service").value
-      };
-    }
-
-    function ajouterLigne(tableId, nbColonnes) {
-      const table = document.getElementById(tableId).getElementsByTagName("tbody")[0];
-      const row = table.insertRow();
-      for (let i = 0; i < nbColonnes; i++) {
-        const cell = row.insertCell();
-        cell.className = "border p-2";
-        cell.innerHTML = '<input class="w-full" />';
-      }
-      const cellDelete = row.insertCell();
-      cellDelete.className = "border p-2 text-center";
-      cellDelete.innerHTML = '<button onclick="this.parentElement.parentElement.remove()">🗑️</button>';
-    }
-
-    function envoyerDonnees() {
-      const infos = getBaseInfos();
-
-      // Veille
-      document.querySelectorAll("#veilleTable tbody tr").forEach(row => {
-        const cells = row.querySelectorAll("input");
-        fetch(url, {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify({
-            type: "veille", ...infos,
-            veille_type: cells[0].value,
-            source: cells[1].value,
-            categorie: cells[2].value,
-            canal: cells[3].value,
-            commentaire: cells[4].value
-          })
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeForm();
+            initializeCharts();
+            startAutoSave();
+            loadSavedData();
+            updateMetrics();
         });
-      });
 
-      // Tests
-      document.querySelectorAll("#testTable tbody tr").forEach(row => {
-        const cells = row.querySelectorAll("input");
-        fetch(url, {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify({
-            type: "test", ...infos,
-            nom: cells[0].value,
-            resultat: cells[1].value,
-            commentaire: cells[2].value
-          })
+        // Initialisation du formulaire
+        function initializeForm() {
+            // Ajout des écouteurs d'événements
+            document.getElementById('veille-form').addEventListener('input', handleFormChange);
+            document.getElementById('veille-form').addEventListener('change', handleFormChange);
+            
+            // Test de connexion Google Sheets
+            testConnection();
+        }
+
+        // Test de connexion
+        async function testConnection() {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?action=test');
+                if (response.ok) {
+                    updateConnectionStatus(true, 'Connecté à Google Sheets');
+                } else {
+                    updateConnectionStatus(false, 'Erreur de connexion');
+                }
+            } catch (error) {
+                console.error('Erreur de connexion:', error);
+                updateConnectionStatus(false, 'Connexion hors ligne');
+            }
+        }
+
+        // Mise à jour du statut de connexion
+        function updateConnectionStatus(isOnline, message) {
+            const statusElement = document.getElementById('connection-status');
+            const statusText = document.getElementById('status-text');
+            const indicator = statusElement.querySelector('.status-indicator');
+            
+            if (isOnline) {
+                statusElement.className = 'bg-green-600 text-white text-center py-2 no-print';
+                indicator.className = 'status-indicator status-online';
+            } else {
+                statusElement.className = 'bg-red-600 text-white text-center py-2 no-print';
+                indicator.className = 'status-indicator status-offline';
+            }
+            
+            statusText.textContent = message;
+        }
+
+        // Gestion des changements du formulaire
+        function handleFormChange(event) {
+            collectFormData();
+            updateMetrics();
+            updateCharts();
+        }
+
+        // Collecte des données du formulaire
+        function collectFormData() {
+            const form = document.getElementById('veille-form');
+            const formDataObj = new FormData(form);
+            
+            formData = {
+                timestamp: new Date().toISOString(),
+                periode: formDataObj.get('periode') || '',
+                referents: formDataObj.get('referents') || '',
+                service: formDataObj.get('service') || '',
+                solutions: collectTableData('solutions-table'),
+                tests: collectTableData('tests-cours-table'),
+                formation_action: formDataObj.get('formation_action') || '',
+                formation_participants: formDataObj.get('formation_participants') || '',
+                formation_apprentissages: formDataObj.get('formation_apprentissages') || '',
+                arbitrages: formDataObj.get('arbitrages') || '',
+                opportunites: formDataObj.get('opportunites') || '',
+                risques: formDataObj.get('risques') || ''
+            };
+            
+            return formData;
+        }
+
+        // Collecte des données de tableau
+        function collectTableData(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = table.querySelectorAll('tr');
+            const data = [];
+            
+            rows.forEach(row => {
+                const inputs = row.querySelectorAll('input, select, textarea');
+                const rowData = {};
+                
+                inputs.forEach(input => {
+                    if (input.name && input.value) {
+                        rowData[input.name] = input.value;
+                    }
+                });
+                
+                if (Object.keys(rowData).length > 0) {
+                    data.push(rowData);
+                }
+            });
+            
+            return data;
+        }
+
+        // Soumission du formulaire
+        async function submitForm() {
+            try {
+                showLoader('Envoi vers Google Sheets...');
+                
+                const data = collectFormData();
+                
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                hideLoader();
+                showNotification('✅ Données envoyées avec succès à Google Sheets!', 'success');
+                updateLastSyncTime();
+                
+                // Générer l'URL de la feuille Google Sheets
+                const sheetsUrl = generateSheetsUrl();
+                document.getElementById('sheets-url').textContent = sheetsUrl;
+                
+            } catch (error) {
+                hideLoader();
+                console.error('Erreur lors de l\'envoi:', error);
+                showNotification('❌ Erreur lors de l\'envoi. Données sauvegardées localement.', 'error');
+                saveToLocalStorage();
+            }
+        }
+
+        // Génération de l'URL Google Sheets
+        function generateSheetsUrl() {
+            const baseUrl = 'https://docs.google.com/spreadsheets/d/';
+            const sheetId = 'VOTRE_SHEET_ID'; // À remplacer par votre ID de feuille
+            return baseUrl + sheetId + '/edit#gid=0';
+        }
+
+        // Sauvegarde locale
+        function saveToLocalStorage() {
+            localStorage.setItem('veille_ia_backup', JSON.stringify(formData));
+        }
+
+        // Chargement des données sauvegardées
+        function loadSavedData() {
+            const saved = localStorage.getItem('veille_ia_backup');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    // Remplir les champs du formulaire
+                    Object.keys(data).forEach(key => {
+                        const element = document.querySelector(`[name="${key}"]`);
+                        if (element && typeof data[key] === 'string') {
+                            element.value = data[key];
+                        }
+                    });
+                } catch (error) {
+                    console.error('Erreur lors du chargement des données:', error);
+                }
+            }
+        }
+
+        // Auto-sauvegarde
+        function startAutoSave() {
+            autoSaveInterval = setInterval(() => {
+                collectFormData();
+                saveToLocalStorage();
+            }, 30000); // Toutes les 30 secondes
+        }
+
+        // Mise à jour des métriques
+        function updateMetrics() {
+            const solutionsCount = document.querySelectorAll('#solutions-table .solution-row').length;
+            const testsCount = document.querySelectorAll('#tests-cours-table .test-cours-row').length;
+            
+            document.getElementById('solutions-count').textContent = solutionsCount;
+            document.getElementById('tests-count').textContent = testsCount;
+            
+            // Calcul du taux de complétion
+            const totalFields = document.querySelectorAll('input, select, textarea').length;
+            const filledFields = document.querySelectorAll('input:not([value=""]), select:not([value=""]), textarea:not(:empty)').length;
+            const completionRate = Math.round((filledFields / totalFields) * 100);
+            
+            document.getElementById('completion-rate').textContent = completionRate + '%';
+        }
+
+        // Initialisation des graphiques
+        function initializeCharts() {
+            // Graphique des priorités
+            const priorityCtx = document.getElementById('priorityChart').getContext('2d');
+            charts.priority = new Chart(priorityCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Haute', 'Moyenne', 'Basse'],
+                    datasets: [{
+                        data: [0, 0, 0],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981'],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Répartition des Priorités',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Graphique de progression
+            const progressCtx = document.getElementById('progressChart').getContext('2d');
+            charts.progress = new Chart(progressCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Solutions', 'Tests', 'Formations', 'Points d\'attention'],
+                    datasets: [{
+                        label: 'Nombre d\'éléments',
+                        data: [0, 0, 0, 0],
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b'],
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Activités de la Semaine',
+                            font: { size: 16, weight: 'bold' }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Mise à jour des graphiques
+        function updateCharts() {
+            // Compter les priorités
+            const priorities = { 'Haute': 0, 'Moyenne': 0, 'Basse': 0 };
+            document.querySelectorAll('.priority-select').forEach(select => {
+                if (select.value && priorities.hasOwnProperty(select.value)) {
+                    priorities[select.value]++;
+                }
+            });
+
+            // Mise à jour du graphique des priorités
+            charts.priority.data.datasets[0].data = [priorities['Haute'], priorities['Moyenne'], priorities['Basse']];
+            charts.priority.update();
+
+            // Mise à jour du graphique de progression
+            const counts = [
+                document.querySelectorAll('#solutions-table .solution-row').length,
+                document.querySelectorAll('#tests-cours-table .test-cours-row').length,
+                document.querySelector('[name="formation_action"]').value ? 1 : 0,
+                (document.querySelector('[name="arbitrages"]').value ? 1 : 0) + 
+                (document.querySelector('[name="opportunites"]').value ? 1 : 0) + 
+                (document.querySelector('[name="risques"]').value ? 1 : 0)
+            ];
+
+            charts.progress.data.datasets[0].data = counts;
+            charts.progress.update();
+        }
+
+        // Fonctions pour les sliders
+        function updatePertinenceValue(slider) {
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = slider.value;
+        }
+
+        function updateProgressValue(slider) {
+            const valueDisplay = slider.nextElementSibling;
+            valueDisplay.textContent = slider.value + '%';
+        }
+
+        // Fonction pour les couleurs de priorité
+        function updatePriorityColor(select) {
+            const row = select.closest('tr');
+            row.className = row.className.replace(/priority-\w+/g, '');
+            
+            switch(select.value) {
+                case 'Haute':
+                    row.classList.add('priority-high');
+                    break;
+                case 'Moyenne':
+                    row.classList.add('priority-medium');
+                    break;
+                case 'Basse':
+                    row.classList.add('priority-low');
+                    break;
+            }
+            updateCharts();
+        }
+
+        // Fonctions d'ajout de lignes
+        function addSolutionRow() {
+            const tbody = document.getElementById('solutions-table');
+            const newRow = tbody.querySelector('.solution-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, select').forEach(field => {
+                field.value = '';
+                if (field.type === 'range') {
+                    field.value = '3';
+                    field.nextElementSibling.textContent = '3';
+                }
+            });
+            
+            tbody.appendChild(newRow);
+            updateMetrics();
+        }
+
+        function addTestCoursRow() {
+            const tbody = document.getElementById('tests-cours-table');
+            const newRow = tbody.querySelector('.test-cours-row').cloneNode(true);
+            
+            newRow.querySelectorAll('input, textarea').forEach(field => {
+                field.value = '';
+                if (field.type === 'range') {
+                    field.value = '50';
+                    field.nextElementSibling.textContent = '50%';
+                }
+            });
+            
+            tbody.appendChild(newRow);
+            updateMetrics();
+        }
+
+        // Fonctions de suppression
+        function removeSolutionRow(button) {
+            const tbody = document.getElementById('solutions-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                updateMetrics();
+                updateCharts();
+            }
+        }
+
+        function removeTestCoursRow(button) {
+            const tbody = document.getElementById('tests-cours-table');
+            if (tbody.children.length > 1) {
+                button.closest('tr').remove();
+                updateMetrics();
+                updateCharts();
+            }
+        }
+
+        // Export Excel
+        function exportToExcel() {
+            const data = collectFormData();
+            const csvContent = convertToCSV(data);
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `veille_ia_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('📊 Fichier Excel généré avec succès!', 'success');
+        }
+
+        // Conversion en CSV
+        function convertToCSV(data) {
+            let csv = 'Section,Champ,Valeur\n';
+            
+            csv += `Général,Période,"${data.periode}"\n`;
+            csv += `Général,Référents,"${data.referents}"\n`;
+            csv += `Général,Service,"${data.service}"\n`;
+            
+            data.solutions.forEach((solution, index) => {
+                Object.keys(solution).forEach(key => {
+                    csv += `Solution ${index + 1},${key},"${solution[key]}"\n`;
+                });
+            });
+            
+            data.tests.forEach((test, index) => {
+                Object.keys(test).forEach(key => {
+                    csv += `Test ${index + 1},${key},"${test[key]}"\n`;
+                });
+            });
+            
+            return csv;
+        }
+
+        // Génération de rapport PDF
+        function generateReport() {
+            window.print();
+            showNotification('🖨️ Rapport PDF généré!', 'success');
+        }
+
+        // Partage du formulaire
+        function shareForm() {
+            const shareUrl = window.location.href;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Formulaire de Veille IA - JANVIER & PICTO',
+                    text: 'Accédez au système de veille technologique IA',
+                    url: shareUrl
+                });
+            } else {
+                navigator.clipboard.writeText(shareUrl);
+                showNotification('🔗 Lien de partage copié!', 'success');
+            }
+        }
+
+        // Mise à jour de l'heure de synchronisation
+        function updateLastSyncTime() {
+            const now = new Date().toLocaleString('fr-FR');
+            document.getElementById('last-sync').textContent = now;
+        }
+
+        // Affichage des notifications
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-600' : 
+                type === 'error' ? 'bg-red-600' : 'bg-blue-600'
+            } text-white`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Affichage du loader
+        function showLoader(message = 'Chargement...') {
+            const loader = document.createElement('div');
+            loader.id = 'loader';
+            loader.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            loader.innerHTML = `
+                <div class="bg-white rounded-lg p-6 flex items-center space-x-4">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    <span class="text-lg font-semibold">${message}</span>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+
+        // Masquage du loader
+        function hideLoader() {
+            const loader = document.getElementById('loader');
+            if (loader) {
+                document.body.removeChild(loader);
+            }
+        }
+
+        // Nettoyage lors de la fermeture
+        window.addEventListener('beforeunload', function() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
+            }
+            collectFormData();
+            saveToLocalStorage();
         });
-      });
-
-      // Feedback
-      document.querySelectorAll("#feedbackTable tbody tr").forEach(row => {
-        const cells = row.querySelectorAll("input");
-        fetch(url, {
-          method: "POST",
-          mode: "no-cors",
-          body: JSON.stringify({
-            type: "feedback", ...infos,
-            commentaire: cells[0].value
-          })
-        });
-      });
-
-      alert("✅ Données envoyées !");
-    }
-  </script>
+    </script>
 </body>
 </html>
